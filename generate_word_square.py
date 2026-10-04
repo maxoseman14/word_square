@@ -1,6 +1,6 @@
 import argparse
 import requests
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 def validate_arguments(letters, multiplier):
@@ -42,55 +42,57 @@ def get_possible_words(word_list: list, letters: str, multiplier: int):
     return words
 
 
-def generate_square_algorithm(possible_words: list, multiplier: int):
-    current_square = []
-    
-    # Stop when square is full
-    while len(current_square) < multiplier:
-        
-        unused_words = possible_words
-        
-        possible_words_dict = {}
-        
-        for current_word in unused_words:            
-            
-            # Start the square
-            if(len(current_square) == 0):
-                current_square.append(current_word)
-                
-                # Can't use this word again for this square
-                unused_words.remove(current_word)
-                
-            else:
-                # Create character list so can enumerate
-                char_list = list(current_square[-1])
-                
-                # Start at the next position
-                start_position = len(current_square)
-                
-                for index, character in enumerate(char_list[start_position:], start=start_position):
-                    
-                    position = index - 1
-                    # find all words that contain the current char at the current index
-                    matches = [word for word in unused_words if len(word) > position and word[position] == character]
-                    
-                    if(len(matches) > 0):
-                        possible_words_dict[index] = matches
-                    
-                    # matches should contain all words that begin with the next character
-                    # if (len(matches) > 0):
-                    #     current_square.append(matches[0])
-                    #     unused_words.remove(matches[0])
-                    #     break
 
-                    
-                    
-    print(current_square)
-    return current_square     
-                
-    # The Rule is the index of the available words can be spelt by the index of each word (up to the multiplier)  
-    # ROSE, OVEN, SEND, ENDS
+def generate_square_algorithm(available_words, multiplier):
     
+    for key, current_word in enumerate(available_words):
+        # e.g. word is ROSE
+        
+        characters = list(current_word)
+        
+        word_dict = defaultdict(list)
+        
+        # find words that start with remaining characters
+        # add them to dictionaries
+        for key, character in enumerate(characters[1:], start=1):
+            
+            for value in available_words:
+                
+                if value.startswith(character):
+                    word_dict[key].append(value)
+                else:
+                    continue
+    
+        word_dict[0].append(current_word)
+        if len(word_dict) != multiplier:
+            # Move current word to end of available_words list
+            continue
+             
+        # Loop through each item in the dictionary
+        # First dict would be for O-words
+        for index, value in sorted(word_dict.items()):
+            # Don't care about first word
+            start = index + 1
+            dict_words = word_dict[start]
+            for w in dict_words:
+                # Need to spell w with index of other words in other lists
+                word_to_spell = w # OVEN
+                letters = list(word_to_spell) # [O V E N]
+                
+                for letter in letters:
+                    for key, word_list in sorted(word_dict.items()): # word_dict is a dictionary of word lists
+                        # In each dictionary, check for a word that has the letter at the right index
+                        for word in word_list:
+                            if list(word)[start] == letter:
+                                continue
+                            else:
+                                # Remove word from the dictionary
+                                word_list.pop(word)
+                            
+                
+    
+    
+
         
     
 def generate_square(letters: str, multiplier: int):
