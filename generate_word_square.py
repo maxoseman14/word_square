@@ -32,7 +32,7 @@ def can_build_word(word, char_pool):
             return False
     return True
 
-
+# Fix this - this doesn't take into account letters are removed once used by a word
 def get_possible_words(word_list: list, letters: str, multiplier: int):
     words = []
     for word in word_list:
@@ -45,52 +45,88 @@ def get_possible_words(word_list: list, letters: str, multiplier: int):
 
 def generate_square_algorithm(available_words, multiplier):
     
+    current_square = []
+    
     for key, current_word in enumerate(available_words):
         # e.g. word is ROSE
         
-        characters = list(current_word)
+        characters = list(current_word) # R O S E
         
-        word_dict = defaultdict(list)
+        possible_words = defaultdict(list)
         
         # find words that start with remaining characters
-        # add them to dictionaries
+        # add them to dictionaries so you end up with:
+        #  {
+        #     1: ["OVEN"],
+        #     2: ["SEND"],
+        #     3: ["ENDS"]
+        # }
+        
         for key, character in enumerate(characters[1:], start=1):
             
-            for value in available_words:
+            for word in available_words:
                 
-                if value.startswith(character):
-                    word_dict[key].append(value)
+                if word.startswith(character):
+                    possible_words[key].append(word)
                 else:
                     continue
     
-        word_dict[0].append(current_word)
-        if len(word_dict) != multiplier:
+        possible_words[0].append(current_word)
+        #  {
+        #     0: ["ROSE"],
+        #     1: ["OVEN"],
+        #     2: ["SEND"],
+        #     3: ["ENDS"]
+        # }
+        
+        if len(possible_words) != multiplier:
+            # There were no words starting each character of the original word
             # Move current word to end of available_words list
             continue
              
-        # Loop through each item in the dictionary
-        # First dict would be for O-words
-        for index, value in sorted(word_dict.items()):
-            # Don't care about first word
-            start = index + 1
-            dict_words = word_dict[start]
-            for w in dict_words:
-                # Need to spell w with index of other words in other lists
-                word_to_spell = w # OVEN
+        sorted_possible_words = dict(sorted(possible_words.items()))
+        
+        square_candidates = defaultdict(list)
+        
+        for index in sorted_possible_words:
+            # Start from next word (OVEN)
+            position = index + 1
+            possible_words_list = possible_words[position]
+            for possible_word in possible_words_list:
+                # Need to spell word with index of other words in other lists
+                word_to_spell = possible_word # OVEN
                 letters = list(word_to_spell) # [O V E N]
                 
-                for letter in letters:
-                    for key, word_list in sorted(word_dict.items()): # word_dict is a dictionary of word lists
-                        # In each dictionary, check for a word that has the letter at the right index
-                        for word in word_list:
-                            if list(word)[start] == letter:
-                                continue
-                            else:
-                                # Remove word from the dictionary
-                                word_list.pop(word)
-                            
+                letter_indexed_words = []
                 
-    
+                for letter_index, letter in enumerate(letters):
+                    
+                    if len(letter_indexed_words) == 0:
+                        letter_indexed_words = sorted_possible_words.copy()
+                    
+                    letter_indexed_words[letter] = letter_indexed_words.pop(letter_index)
+                    
+                candidates = []
+                for letter_index, liw_list in letter_indexed_words.items():
+                    # find the letter at the index in the words in the list
+                    
+                    for letter_indexed_word in liw_list:
+                        if list(letter_indexed_word)[position] == letter_index:
+                            candidates.append(letter_indexed_word)
+                            continue
+                        else:
+                            liw_list.pop(letter_indexed_word)
+                
+            if len(candidates) == multiplier:
+                square_candidates[index] = candidates
+            else:
+                break
+                            
+        if len(square_candidates) == multiplier:
+           if all(len(item) == multiplier for key, item in dict(square_candidates.items())):
+               print("Square complete")
+        else:
+            break
     
 
         
@@ -108,7 +144,6 @@ def generate_square(letters: str, multiplier: int):
 def generate_word_square(letters, multiplier):
     validate_arguments(letters, multiplier)
     generate_square(letters, multiplier)
-    
     
     
 def main():
