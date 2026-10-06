@@ -32,13 +32,29 @@ def can_build_word(word, char_pool):
             return False
     return True
 
-# Fix this - this doesn't take into account letters are removed once used by a word
+
 def get_possible_words(word_list: list, letters: str, multiplier: int):
     words = []
+    
+    char_counts = Counter(letters)
+    
+    
     for word in word_list:
+        fits = True
         if len(word) == multiplier:
-            if can_build_word(word, letters):
-                words.append(word)
+            letter_counts = Counter(word)
+            for letter, count in letter_counts.items():
+                if char_counts[letter] < count:
+                    # The word cannot be made from available pool
+                    fits = False
+                    break
+            if not fits:
+                continue
+            words.append(word)
+            for char in word:
+                char_counts.subtract(char)
+                
+            
     return words
 
 

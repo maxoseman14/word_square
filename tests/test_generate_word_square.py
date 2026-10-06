@@ -28,10 +28,11 @@ def test_generate_square():
 def test_get_possible_words():
     
     word_list = ["fa", "pa", "up"]
+    expected_words = ["fa", "up"]
     
     possible_words = get_possible_words(word_list, "pfau", 2)
     
-    assert word_list == possible_words
+    assert expected_words == possible_words
     
     
 def test_find_words():
