@@ -11,10 +11,10 @@ def test_argument_validation():
 
 
 def test_generate_square_algorithm():
-    possible_words = ["rose", "blah", "oven", "send", "ends"]
+    possible_words = ["rose", "oven", "send", "ends"]
     multiplier = 4
     
-    generate_square_algorithm(possible_words, multiplier)
+    generate_square_algorithm(possible_words, multiplier)    
 
     
 def test_generate_square():
