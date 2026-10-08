@@ -37,12 +37,12 @@ def generate_square(words, letters, multiplier):
         for word in candidates:
             
             word_count = Counter(word)
-            remaining_letters = Counter(letters)
+            available_letters = Counter(letters)
             
             can_make_word = True
             
             for letter, count in word_count.items():
-                if count > remaining_letters[letter]:
+                if count > available_letters[letter]:
                     can_make_word = False
                     break
                 
@@ -50,7 +50,7 @@ def generate_square(words, letters, multiplier):
                 continue
             
             square.append(word)
-            remaining_letters - word_count
+            remaining_letters = available_letters - word_count
             
             if backtrack(square, remaining_letters):
                 return True
@@ -69,7 +69,12 @@ def generate_square(words, letters, multiplier):
 
 def generate_word_square(letters, multiplier):
     validate_arguments(letters, multiplier)
-    generate_square(load_word_list(), letters, multiplier)
+    result = generate_square(load_word_list(), letters, multiplier):
+    if result is None:
+        print("No Solution")
+    else:
+        for word in result:
+            print(word)
     
     
 def main():
