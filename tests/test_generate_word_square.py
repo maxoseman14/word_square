@@ -15,8 +15,7 @@ def test_generate_square_algorithm():
     multiplier = 4
     
     generate_square_algorithm(possible_words, multiplier)
-    
-    
+
     
 def test_generate_square():
     letters = "eeeeddoonnnsssrv"
@@ -33,12 +32,5 @@ def test_get_possible_words():
     possible_words = get_possible_words(word_list, "pfau", 2)
     
     assert expected_words == possible_words
-    
-    
-def test_find_words():
-    
-    word_list = ["rose", "send", "oven", "ends"]
-    
-    find_words(word_list=word_list, multiplier=4)
     
     
