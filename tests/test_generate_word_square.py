@@ -1,6 +1,6 @@
 import pytest
 import sys
-from generate_word_square import validate_arguments, generate_square_algorithm, generate_square, get_possible_words
+from generate_word_square import validate_arguments, generate_square
 
 
 def test_argument_validation():
@@ -10,19 +10,13 @@ def test_argument_validation():
         validate_arguments("abcdefg", 3)
 
 
-def test_generate_square_algorithm():
-    possible_words = ["rose", "oven", "send", "ends"]
-    multiplier = 4
-    
-    generate_square_algorithm(possible_words, multiplier)    
-
-    
 def test_generate_square():
-    letters = "eeeeddoonnnsssrv"
+    possible_words = ["rose", "oven", "send", "ends"]
+    letters = "sdasfagfa"
     multiplier = 4
     
-    generate_square(letters=letters, multiplier=multiplier)
-    
+    generate_square(possible_words, letters, multiplier)    
+
     
 def test_get_possible_words():
     

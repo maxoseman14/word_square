@@ -17,14 +17,41 @@ def load_word_list():
         
         
 def generate_square(words, letters, multiplier):
+        
+    available_letters = letters
     
-    
-    
-
-           
-                
+    def backtrack(square):
+        
+        if len(square) == multiplier:
+            return True
+        
+        prefix = ""
+        
+        for word in square:
+            prefix += word[len(square)]
             
-
+        candidates = []
+        
+        for word in words:
+            if word.startswith(prefix):
+                candidates.append(word)
+                
+        for word in candidates:
+            square.append(word)
+            
+            if backtrack(square):
+                return True
+            
+            square.pop()
+            
+        return False
+    
+    square = []
+    
+    if backtrack(square):
+        return square
+    
+    return None
     
 
 def generate_word_square(letters, multiplier):
