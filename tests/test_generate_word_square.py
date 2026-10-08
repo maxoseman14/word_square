@@ -15,7 +15,7 @@ def test_generate_square():
     letters = "sdasfagfa"
     multiplier = 4
     
-    generate_square(possible_words, letters, multiplier)    
+    generate_square(possible_words, letters, multiplier)  
 
     
 def test_get_possible_words():

@@ -17,10 +17,8 @@ def load_word_list():
         
         
 def generate_square(words, letters, multiplier):
-        
-    available_letters = letters
-    
-    def backtrack(square):
+               
+    def backtrack(square, letters):
         
         if len(square) == multiplier:
             return True
@@ -37,9 +35,24 @@ def generate_square(words, letters, multiplier):
                 candidates.append(word)
                 
         for word in candidates:
-            square.append(word)
             
-            if backtrack(square):
+            word_count = Counter(word)
+            remaining_letters = Counter(letters)
+            
+            can_make_word = True
+            
+            for letter, count in word_count.items():
+                if count > remaining_letters[letter]:
+                    can_make_word = False
+                    break
+                
+            if not can_make_word:
+                continue
+            
+            square.append(word)
+            remaining_letters - word_count
+            
+            if backtrack(square, remaining_letters):
                 return True
             
             square.pop()
@@ -48,7 +61,7 @@ def generate_square(words, letters, multiplier):
     
     square = []
     
-    if backtrack(square):
+    if backtrack(square, letters):
         return square
     
     return None
