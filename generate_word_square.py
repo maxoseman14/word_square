@@ -1,38 +1,39 @@
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict
 
-
-def validate_arguments(letters, multiplier, word_file):
-    print(f"Validating arguments: letters: '{letters}', multiplier: {multiplier}, word_file: {word_file}")
-    if (len(letters) / multiplier != multiplier):
-        message = "The number of letters should be the square of the multiplier"
-        raise Exception(message)
+def validate_arguments(letters, size, word_file):
+    if (len(letters) / size != size):
+        raise Exception("The number of letters should be the square of the size")
     
     try:
         with open(word_file, "r", encoding="utf-8") as f:
             return [line.strip().lower() for line in f]
     except OSError as err:
-        message = "Unable to load word dictionary: {err}"
-        raise Exception(message)
+        raise Exception(f"Unable to load word dictionary: {err}")
         
         
-def generate_square(letters, multiplier, words):
+def generate_square(letters, size, words):
+    
+    prefix_dictionary = defaultdict(list)
+    
+    for word in words:
+        if len(word) == size:
+            for i in range(size):
+                prefix_dictionary[word[:i]].append(word)
                
     def backtrack(square, letters):
         
-        if len(square) == multiplier:
+        if len(square) == size:
             return True
         
-        prefix = ""
+        row_prefix = ""
         
         for word in square:
-            prefix += word[len(square)]
+            row_prefix += word[len(square)]
             
         candidates = []
         
-        for word in words:
-            if len(word) == multiplier and word.startswith(prefix):
-                candidates.append(word)
+        candidates = prefix_dictionary[row_prefix]
                 
         for word in candidates:
             
@@ -60,7 +61,7 @@ def generate_square(letters, multiplier, words):
         return False
     
     square = []
-    
+        
     if backtrack(square, letters):
         return square
     
@@ -79,10 +80,10 @@ def main():
     )
     
     parser.add_argument(
-        "-m", "--multiplier", 
+        "-m", "--size", 
         type=int, 
         default=4,
-        help="The multiplier used to construct the grid",
+        help="The size used to construct the grid",
     )
     
     parser.add_argument(
@@ -94,12 +95,14 @@ def main():
     # 3. Parse the arguments from the command line
     args = parser.parse_args()
     letters = args.letters
-    multiplier = args.multiplier
+    size = args.size
     word_file_name = args.file
     
-    word_file = validate_arguments(letters, multiplier, word_file_name)
+    print(f"Validating arguments: letters: {letters}, size: {size}, word_file: {word_file_name}")
+    word_file = validate_arguments(letters, size, word_file_name)
     
-    result = generate_square(letters, multiplier, word_file)
+    print("Generating word square")
+    result = generate_square(letters.lower(), size, word_file)
     if result is None:
         print("No Solution")
     else:

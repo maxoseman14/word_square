@@ -15,10 +15,10 @@ def test_argument_validation_success(local_file):
     validate_arguments("abcd", 2, local_file)
     
 
-def test_argument_validation_letters_multiplier_failure(local_file):
+def test_argument_validation_letters_size_failure(local_file):
     """Test that an exception is raised if the arguments are not compatible"""
     
-    with pytest.raises(Exception, match="The number of letters should be the square of the multiplier"):
+    with pytest.raises(Exception, match="The number of letters should be the square of the size"):
         validate_arguments("abcdefg", 3, local_file)
         
         
@@ -34,9 +34,9 @@ def test_generate_square():
     
     solution = ["moan", "once", "acme", "need"]
     letters = "aaccdeeeemmnnnoo"
-    multiplier = 4
+    size = 4
     
-    result = generate_square(solution, letters, multiplier)
+    result = generate_square(letters, size, solution)
     assert result == solution
     
     
@@ -46,9 +46,9 @@ def test_generate_square_with_prefix_alternatives():
     possible_words = ["moan", "once", "acid", "need", "aced", "acme"]
     solution = ["moan", "once", "acme", "need"]
     letters = "aaccdeeeemmnnnoo"
-    multiplier = 4
+    size = 4
 
-    result = generate_square(possible_words, letters, multiplier)
+    result = generate_square(letters, size, possible_words)
     
     assert result == solution
     
@@ -58,8 +58,8 @@ def test_generate_square_incorrect_letters():
     
     possible_words = ["moan", "once", "acid", "need", "aced", "acme"]
     letters = "aaccdeeeemmnnnop"
-    multiplier = 4
+    size = 4
 
-    result = generate_square(possible_words, letters, multiplier)
+    result = generate_square(letters, size, possible_words)
     
     assert result == None

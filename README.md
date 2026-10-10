@@ -11,7 +11,7 @@ To run this from the command line you will need:
 ```
     pip install -r requirements.txt
 ```
-* To have a local copy of a word dictionary, you can find one here: http://norvig.com/ngrams/enable1.txt
+* To have a local copy of a word dictionary containing valid English words, where each word is on a new line. You can find one here: http://norvig.com/ngrams/enable1.txt
 
 ## Running the script
 
@@ -19,10 +19,10 @@ To run from the root of this project:
 
 e.g.
 ```
-    python .\generate_word_square.py --letters "aaccdeeeemmnnnoo" --multiplier 4 --file "enable1.txt"
+    python .\generate_word_square.py --letters "aaccdeeeemmnnnoo" --size 4 --file "enable1.txt"
 ```
 
-The output should be a grid of multiplier * multiplier where the words in each column and row of the same
+The output should be a grid of size * size where the words in each column and row of the same
 number spell the same word.
 
 e.g.
@@ -31,4 +31,12 @@ e.g.
     once
     acme
     need
+```
+
+## Running the unit tests
+
+To run the unit tests:
+
+```
+    python -m pytest .\tests\test_generate_word_square.py
 ```
