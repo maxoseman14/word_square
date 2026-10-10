@@ -1,12 +1,37 @@
 import argparse
 from collections import Counter, defaultdict
 
-def validate_arguments(letters, size, word_file):
+def valid_letters(value):
+    if not (value.isascii() and value.isalpha()):
+        raise argparse.ArgumentTypeError(
+            f"'{value}' is invalid. Only standard English letters (A-Z, a-z) are allowed."
+        )
+    return value
+
+    
+def valid_number(value):
+    if not isinstance(value, int):
+        raise argparse.ArgumentTypeError(
+            f"'{value}' is invalid. Only numbers are allowed."
+        )
+    return value
+
+
+def valid_file(value):
+    if value.is_file():
+        return value
+    else:
+        raise argparse.ArgumentTypeError(
+            f"'{value}' is invalid. Only standard English letters (A-Z, a-z) are allowed."
+        )
+
+
+def validate_arguments(letters, size, file):
     if (len(letters) / size != size):
         raise Exception("The number of letters should be the square of the size")
     
     try:
-        with open(word_file, "r", encoding="utf-8") as f:
+        with open(file, "r", encoding="utf-8") as f:
             return [line.strip().lower() for line in f]
     except OSError as err:
         raise Exception(f"Unable to load word dictionary: {err}")
@@ -66,34 +91,42 @@ def generate_square(letters, size, words):
         return square
     
     return None
-    
-    
-def main():
-    parser = argparse.ArgumentParser(
-        description=""
-    )
 
+
+def parse_args(args=None):
+    parser = argparse.ArgumentParser(
+            description=""
+        )
+    
     parser.add_argument(
         "-l", "--letters",
-        type=str,
+        required=True,
+        type=valid_letters,
         help="The letters to construct the word square from",
     )
     
     parser.add_argument(
-        "-m", "--size", 
-        type=int, 
-        default=4,
+        "-s", "--size",
+        required=True,
+        type=valid_number, 
         help="The size used to construct the grid",
     )
     
     parser.add_argument(
         "-f", "--file", 
+        required=True,
         type=str, 
         help="The file containing available words",
     )
 
     # 3. Parse the arguments from the command line
-    args = parser.parse_args()
+    return parser.parse_args()
+    
+    
+def main():
+    
+    args = parse_args()
+    
     letters = args.letters
     size = args.size
     word_file_name = args.file

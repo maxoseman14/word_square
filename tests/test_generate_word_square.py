@@ -1,5 +1,5 @@
 import pytest
-from generate_word_square import validate_arguments, generate_square
+from generate_word_square import validate_arguments, generate_square, parse_args
 
 
 @pytest.fixture
@@ -63,3 +63,28 @@ def test_generate_square_incorrect_letters():
     result = generate_square(letters, size, possible_words)
     
     assert result == None
+    
+    
+@pytest.mark.parametrize("bad_args", "expected_error",
+[
+    (
+        ["--letters", 5, "--size", 7, "--file", "test.txt"],
+        "error: argument -l/--letters: '5' is invalid. Only standard English letters (A-Z, a-z) are allowed."
+    ),
+    (
+        ["--letters", "abc", "--size", "7", "--file", "test.txt"],
+        "error: argument -m/--size: '7' is invalid. Only numbers are allowed"
+    ),
+    (
+        ["--letters", "abc", "--size", 7, "--file", 1],
+        
+    ),
+    (
+        ["--letters", "abc", "--size", 7],
+        "error: the following arguments are required: -f/--file"
+    )
+])
+def test_parse_arguments_invalid_inputs(bad_args):
+    """Test various invalid inputs all trigger SystemExit."""
+    with pytest.raises(SystemExit):
+        parse_args(bad_args)
