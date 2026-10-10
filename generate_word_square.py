@@ -16,7 +16,7 @@ def validate_arguments(letters, multiplier, word_file):
         raise Exception(message)
         
         
-def generate_square(words, letters, multiplier):
+def generate_square(letters, multiplier, words):
                
     def backtrack(square, letters):
         
@@ -31,7 +31,7 @@ def generate_square(words, letters, multiplier):
         candidates = []
         
         for word in words:
-            if word.startswith(prefix):
+            if len(word) == multiplier and word.startswith(prefix):
                 candidates.append(word)
                 
         for word in candidates:
@@ -83,6 +83,12 @@ def main():
         type=int, 
         default=4,
         help="The multiplier used to construct the grid",
+    )
+    
+    parser.add_argument(
+        "-f", "--file", 
+        type=str, 
+        help="The file containing available words",
     )
 
     # 3. Parse the arguments from the command line
