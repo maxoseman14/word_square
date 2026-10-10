@@ -1,19 +1,19 @@
 import argparse
-import requests
-from collections import Counter, defaultdict
+from collections import Counter
 
 
-def validate_arguments(letters, multiplier):
-    print(f"Validating arguments... letters: {letters}, multiplier: {multiplier}")
+def validate_arguments(letters, multiplier, word_file):
+    print(f"Validating arguments: letters: '{letters}', multiplier: {multiplier}, word_file: {word_file}")
     if (len(letters) / multiplier != multiplier):
         message = "The number of letters should be the square of the multiplier"
-        print(message)
         raise Exception(message)
     
-    
-def load_word_list():
-    with open("enable1.txt", "r", encoding="utf-8") as f:
-        return [line.strip().lower() for line in f]
+    try:
+        with open(word_file, "r", encoding="utf-8") as f:
+            return [line.strip().lower() for line in f]
+    except OSError as err:
+        message = "Unable to load word dictionary: {err}"
+        raise Exception(message)
         
         
 def generate_square(words, letters, multiplier):
@@ -66,16 +66,6 @@ def generate_square(words, letters, multiplier):
     
     return None
     
-
-def generate_word_square(letters, multiplier):
-    validate_arguments(letters, multiplier)
-    result = generate_square(load_word_list(), letters, multiplier):
-    if result is None:
-        print("No Solution")
-    else:
-        for word in result:
-            print(word)
-    
     
 def main():
     parser = argparse.ArgumentParser(
@@ -97,8 +87,18 @@ def main():
 
     # 3. Parse the arguments from the command line
     args = parser.parse_args()
+    letters = args.letters
+    multiplier = args.multiplier
+    word_file_name = args.file
     
-    generate_word_square(args.letters, args.multiplier)
+    word_file = validate_arguments(letters, multiplier, word_file_name)
+    
+    result = generate_square(letters, multiplier, word_file)
+    if result is None:
+        print("No Solution")
+    else:
+        for word in result:
+            print(word)
     
 if __name__ == "__main__":
     main()

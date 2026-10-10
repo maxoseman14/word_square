@@ -1,5 +1,4 @@
 import pytest
-import sys
 from generate_word_square import validate_arguments, generate_square
 
 
@@ -14,11 +13,30 @@ def test_argument_validation():
         validate_arguments("abcdefg", 3)
     
 def test_generate_square():
-    possible_words = ["moan", "once", "acme", "need"]
+    solution = ["moan", "once", "acme", "need"]
     letters = "aaccdeeeemmnnnoo"
     multiplier = 4
     
-    generate_square(possible_words, letters, multiplier)
+    result = generate_square(solution, letters, multiplier)
+    assert result == solution
+    
     
 def test_generate_square_with_prefix_alternatives():
+    possible_words = ["moan", "once", "acid", "need", "aced", "acme"]
+    solution = ["moan", "once", "acme", "need"]
+    letters = "aaccdeeeemmnnnoo"
+    multiplier = 4
+
+    result = generate_square(possible_words, letters, multiplier)
     
+    assert result == solution
+    
+    
+def test_generate_square_incorrect_letters():
+    possible_words = ["moan", "once", "acid", "need", "aced", "acme"]
+    letters = "aaccdeeeemmnnnop"
+    multiplier = 4
+
+    result = generate_square(possible_words, letters, multiplier)
+    
+    assert result == None
