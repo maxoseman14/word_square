@@ -1,32 +1,72 @@
 import pytest
-from generate_word_square import validate_arguments, generate_square, parse_args
+import re
+from generate_word_square import (
+    load_word_file,
+    semantically_validate_args, 
+    generate_square, 
+    valid_letters,
+    valid_number
+)
 
 
 @pytest.fixture
-def local_file(tmp_path):
+def valid_local_file(tmp_path):
     test_file = tmp_path / "words.txt"
-    test_file.write_text("This is a test")
+    test_file.write_text("Test")
     return test_file
 
 
-def test_argument_validation_success(local_file):
-    """Verifies that the arguments are compatible."""
-    
-    validate_arguments("abcd", 2, local_file)
+def test_valid_letters_success():
+    """Test valid letters pass validation"""
+    letters = "abcd"
+    assert valid_letters(letters) == letters
     
 
-def test_argument_validation_letters_size_failure(local_file):
+def test_valid_letters_failure():
+    """Test invalid letters fail validation"""
+    letters = "abc0"
+    with pytest.raises(Exception, match=re.escape("'abc0' is invalid. Only standard English letters (A-Z, a-z) are allowed.")):
+        valid_letters(letters)
+        
+    
+def test_valid_number_success():
+    """Test valid numbers pass validation"""
+    number = "1"
+    assert valid_number(number) == int(number)
+    
+
+def test_valid_number_negative_failure():
+    """Test negative number fail validation"""
+    number = "-1"
+    with pytest.raises(Exception, match=re.escape("'-1' must be a positive number greater than 0.")):
+        valid_number(number)
+        
+
+def test_valid_number_decimal_failure():
+    """Test decimal number fail validation"""
+    number = "0.5"
+    with pytest.raises(Exception, match=re.escape("'0.5' is not a valid whole number.")):
+        valid_number(number)
+    
+
+def test_argument_validation_success():
+    """Verifies that the arguments are compatible."""
+    
+    semantically_validate_args("abcd", 2)
+    
+
+def test_argument_validation_letters_size_failure():
     """Test that an exception is raised if the arguments are not compatible"""
     
     with pytest.raises(Exception, match="The number of letters should be the square of the size"):
-        validate_arguments("abcdefg", 3, local_file)
+        semantically_validate_args("abcdefg", 3)
         
         
-def test_argument_validation_file_does_not_exist():
-    """Test that an exception is raised if the word dictionary file does not exist"""
+def test_load_word_file():
+    """Test that an exception is raised if the word dictionary file cannot be loaded"""
     
     with pytest.raises(Exception, match="Unable to load word dictionary"):
-        validate_arguments("abcdefghi", 3, "invalid.txt")
+        load_word_file("file.txt")
         
     
 def test_generate_square():
@@ -63,28 +103,3 @@ def test_generate_square_incorrect_letters():
     result = generate_square(letters, size, possible_words)
     
     assert result == None
-    
-    
-@pytest.mark.parametrize("bad_args", "expected_error",
-[
-    (
-        ["--letters", 5, "--size", 7, "--file", "test.txt"],
-        "error: argument -l/--letters: '5' is invalid. Only standard English letters (A-Z, a-z) are allowed."
-    ),
-    (
-        ["--letters", "abc", "--size", "7", "--file", "test.txt"],
-        "error: argument -m/--size: '7' is invalid. Only numbers are allowed"
-    ),
-    (
-        ["--letters", "abc", "--size", 7, "--file", 1],
-        
-    ),
-    (
-        ["--letters", "abc", "--size", 7],
-        "error: the following arguments are required: -f/--file"
-    )
-])
-def test_parse_arguments_invalid_inputs(bad_args):
-    """Test various invalid inputs all trigger SystemExit."""
-    with pytest.raises(SystemExit):
-        parse_args(bad_args)

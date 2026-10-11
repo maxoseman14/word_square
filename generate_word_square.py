@@ -2,6 +2,7 @@ import argparse
 from collections import Counter, defaultdict
 
 def valid_letters(value):
+    """Validates that argument is a letter in the English alphabet."""
     if not (value.isascii() and value.isalpha()):
         raise argparse.ArgumentTypeError(
             f"'{value}' is invalid. Only standard English letters (A-Z, a-z) are allowed."
@@ -10,26 +11,25 @@ def valid_letters(value):
 
     
 def valid_number(value):
-    if not isinstance(value, int):
-        raise argparse.ArgumentTypeError(
-            f"'{value}' is invalid. Only numbers are allowed."
-        )
-    return value
+    """Validates that argument is a positive whole number."""
+    try:
+        size = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"'{value}' is not a valid whole number.")
+        
+    if size <= 0:
+        raise argparse.ArgumentTypeError(f"'{value}' must be a positive number greater than 0.")
+    return size
 
 
-def valid_file(value):
-    if value.is_file():
-        return value
-    else:
-        raise argparse.ArgumentTypeError(
-            f"'{value}' is invalid. Only standard English letters (A-Z, a-z) are allowed."
-        )
-
-
-def validate_arguments(letters, size, file):
+def semantically_validate_args(letters, size):
+    """Validates letters and size are compatible."""
     if (len(letters) / size != size):
         raise Exception("The number of letters should be the square of the size")
     
+    
+def load_word_file(file):
+    """Loads the word file."""
     try:
         with open(file, "r", encoding="utf-8") as f:
             return [line.strip().lower() for line in f]
@@ -115,11 +115,9 @@ def parse_args(args=None):
     parser.add_argument(
         "-f", "--file", 
         required=True,
-        type=str, 
         help="The file containing available words",
     )
 
-    # 3. Parse the arguments from the command line
     return parser.parse_args()
     
     
@@ -129,11 +127,11 @@ def main():
     
     letters = args.letters
     size = args.size
-    word_file_name = args.file
+    filename = args.file
     
-    print(f"Validating arguments: letters: {letters}, size: {size}, word_file: {word_file_name}")
-    word_file = validate_arguments(letters, size, word_file_name)
-    
+    semantically_validate_args(letters, size, filename)
+    word_file = load_word_file(filename)
+
     print("Generating word square")
     result = generate_square(letters.lower(), size, word_file)
     if result is None:
