@@ -129,7 +129,7 @@ def main():
     size = args.size
     filename = args.file
     
-    semantically_validate_args(letters, size, filename)
+    semantically_validate_args(letters, size)
     word_file = load_word_file(filename)
 
     print("Generating word square")
