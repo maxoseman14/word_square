@@ -1,1 +1,6 @@
 enable1.txt
+__pycache__
+.pytest_cache
+tests/__pycache__
+.vscode
+
